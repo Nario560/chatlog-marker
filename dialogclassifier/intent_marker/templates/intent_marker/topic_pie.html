@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'intent_marker/head.html' %}
+</head>
+<body>
+<div class="container-fluid">
+    <div class="jumbotron">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="{% url 'intent_marker:total_stat' %}" class="btn btn-primary">USER STAT</a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{% url 'intent_marker:report_index' %}" class="btn btn-primary">REPORT</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <iframe src="http://inhuman_test:5601/app/kibana#/visualize/edit/AWYQ-74EQZUxg83KzUk8?embed=true&_g=(refreshInterval%3A('%24%24hashKey'%3A'object%3A964'%2Cdisplay%3AOff%2Cpause%3A!f%2Csection%3A0%2Cvalue%3A0)%2Ctime%3A(from%3Anow-1y%2Cmode%3Aquick%2Cto%3Anow))"
+            height="960" width="100%"></iframe>
+</div>
+</body>
+</html>

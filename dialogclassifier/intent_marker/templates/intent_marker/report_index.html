@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'intent_marker/head.html' %}
+</head>
+<body>
+<div class="container-fluid">
+
+    <div class="jumbotron">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="{% url 'intent_marker:total_stat' %}" class="btn btn-primary">USER STAT</a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{% url 'intent_marker:topic_pie' %}" class="btn btn-primary">TOPIC PIE</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2>DIALOG DATES:</h2>
+    <ul>
+        <li><h3>TOTAL: <a href="{% url 'intent_marker:report_total' %}" class="btn btn-info">VIEW</a></h3></li>
+        {% for rec in context %}
+            <li><h3>{{ rec.chat_date.isoformat }}: <a class="btn btn-primary"
+                                                      href="{% url 'intent_marker:report_by_date' rec.chat_date %}">VIEW</a>
+                <a class="btn btn-danger" href="{% url 'intent_marker:save_report' rec.chat_date %}">DOWNLOAD</a>
+
+            </h3></li>
+        {% endfor %}
+    </ul>
+
+    </tbody>
+    </table>
+</div>
+</body>
+</html>

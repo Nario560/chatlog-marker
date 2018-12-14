@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'intent_marker/head.html' %}
+    <script>
+        function saveData(e) {
+            var top = document.getElementById('topic-selector');
+            var topicRes = top.options[top.selectedIndex].value;
+
+            var subtop = document.getElementById('subtopic-selector');
+            var subtopicRes = subtop.options[subtop.selectedIndex].value;
+
+            var customTop = document.getElementById('topic-custom').value;
+            var customSubtop = document.getElementById('subtopic-custom').value;
+
+            var data = {
+                chosen_phrases: getData(),
+                client_id: $('#client_id').text(),
+                topic: topicRes,
+                subtopic: subtopicRes,
+                custom_topic: customTop,
+                custom_subtopic: customSubtop,
+                non_standart_question: document.getElementById('nonStandartQuestion').checked,
+                agressive_client: document.getElementById('agressiveClient').checked,
+                user: window.location.pathname.slice(1)
+            };
+
+            if (
+                (topicRes && subtopicRes && !customTop && !customSubtop) ||
+                (topicRes && !subtopicRes && !customTop && customSubtop) ||
+                (!topicRes && !subtopicRes && customTop && customSubtop)
+            ) {
+                $.ajax({
+                    type: "POST",
+                    url: "save_data",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    contentType: "application/json; charset=UTF-8",
+                    complete: function () {
+                        location.reload();
+                    }
+                });
+            } else {
+                alert('Требуется заполнить одно из полей "Тема" и одно из полей "Другая тема"');
+                location.reload()
+            }
+        }
+
+        function getData() {
+            {#var table = document.querySelectorAll('form[name=markers] table tbody tr');#}
+            var $table = $('form[name=markers] table tbody tr');
+            var data = [];
+            $table
+                .each(function (i, row) {
+                    var flag = $(this).find("input[type=checkbox]:checked").length;
+
+                    if (flag) {
+                        data.push(
+                            {
+                                phrase: $(this).find(":nth-child(2)").text(),
+                                checked: true
+                            });
+                    }
+                });
+            return data;
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#shittyBtn").on('click', saveData);
+        });
+    </script>
+</head>
+<body>
+<div class="container-fluid">
+    <h3>{{ context.dialog_date }}</h3>
+    <h3 id="client_id">{{ context.customer }}</h3>
+    <form name="markers" id="inpForm">
+        {% csrf_token %}
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>Участник</th>
+                <th>Текст сообщения</th>
+                <th>Сохранить фразу</th>
+            </tr>
+            </thead>
+            {% for phrase in context.dialog %}
+                <tr class="{% if phrase.flag == 'CLIENT' %} 'success' {% else %} 'default'{% endif %}">
+                    <td style="font-weight: bold">
+                        {{ phrase.flag }}
+                    </td>
+                    <td>{{ phrase.phrase }}</td>
+                    <td>
+                        <form>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <input type="checkbox" {% if phrase.flag != 'CLIENT' %}
+                                            {{ 'disabled' }} {{ 'hidden' }} {% else %} {{ '' }} {% endif %}  />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <div class="container-fluid form-group">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 style="font-weight: bold">Тема</h5>
+                    <select class="form-control" id="topic-selector">
+                        <option value="" selected="selected"></option>
+                        {% for top in topics %}
+                            <option value="{{ top }}">{{ top }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <h5 style="font-weight: bold">Подтема</h5>
+                    <select class="form-control" id="subtopic-selector">
+                        <option selected="selected"></option>
+                    </select>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 style="font-weight: bold">Другая тема</h5>
+                    <input type="text" class="form-control" id="topic-custom"
+                           placeholder="Введите тему, если она не указана в списке выше">
+                </div>
+                <div class="col-md-6">
+                    <h5 style="font-weight: bold">Другая подтема</h5>
+                    <input type="text" class="form-control" id="subtopic-custom"
+                           placeholder="Введите тему, если она не указана в списке выше">
+                </div>
+            </div>
+            <br>
+            <div class="row container-fluid">
+                <div class="col-md-6">
+                    <h5 style="font-weight: bold">Признак нестандартной темы</h5>
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="nonStandartQuestion">
+                        <label class="form-check-label" for="exampleCheck1">Отметьте пункт, если формулировка
+                            нестанартна для этой темы</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h5 style="font-weight: bold">Агрессивный клиент</h5>
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="agressiveClient">
+                        <label class="form-check-label" for="exampleCheck1">Отметьте пункт, если клиент
+                            агрессивен</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <input id="shittyBtn" type="button" value="Сохранить" class="btn btn-primary col-lg"/>
+            </div>
+        </div>
+    </form>
+    <br>
+    <br>
+</div>
+<script>
+    jQuery(function ($) {
+
+        var topiclist = {{ topic_meta | safe }};
+
+        var $subtopics = $('#subtopic-selector');
+        $('#topic-selector').change(function () {
+            var topic = $(this).val(), pairs = topiclist[topic] || [];
+            pairs.sort();
+            var html = $.map(pairs, function (lcn) {
+                return '<option value="' + lcn + '">' + lcn + '</option>'
+            }).join('');
+            $subtopics.html(html);
+        });
+    });
+</script>
+</body>
+</html>

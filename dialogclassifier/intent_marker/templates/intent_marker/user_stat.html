@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'intent_marker/head.html' %}
+</head>
+<body>
+<div class="jumbotron">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <a href="{% url 'intent_marker:topic_pie' %}" class="btn btn-primary">TOPIC PIE</a>
+            </div>
+            <div class="col-md-6">
+                <a href="{% url 'intent_marker:report_index' %}" class="btn btn-primary">REPORT</a>
+            </div>
+        </div>
+    </div>
+</div>
+<iframe src="http://inhuman_test:5601/app/kibana#/visualize/edit/AWYfdah3QZUxg83KzqZY?embed=true&_g=(refreshInterval%3A(display%3AOff%2Cpause%3A!f%2Cvalue%3A0)%2Ctime%3A(from%3Anow-1y%2Cmode%3Aquick%2Cto%3Anow))"
+        height="960" width="100%"></iframe>
+{#    <table class="table table-striped table-bordered table-hover">#}
+{#        <thead>#}
+{#        <tr>#}
+{#            <th>WORK DATE</th>#}
+{#            <th>USER</th>#}
+{#            <th>RECORDS DONE</th>#}
+{#        </tr>#}
+{#        </thead>#}
+{#        <tbody>#}
+{#        {% for rec in context %}#}
+{#            <tr>#}
+{#                <td><a href="{% url 'intent_marker:date_stat' rec.date %}">{{ rec.date.isoformat }}</a></td>#}
+{#                <td><a href="{% url 'intent_marker:user_stat' rec.user %}">{{ rec.user }}</a></td>#}
+{#                <td>{{ rec.records }}</td>#}
+{#            </tr>#}
+{#        {% endfor %}#}
+{##}
+{#        </tbody>#}
+{#    </table>#}
+</div>
+</body>
+</html>

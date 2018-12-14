@@ -1,0 +1,25 @@
+version: '3'
+services:
+  nginx:
+    image: nginx:1.15.2-alpine
+    container_name: dialog_marker_nginx
+    ports:
+      - "9000:8000"
+    volumes:
+      - ./src:/src
+      - ./config/nginx:/etc/nginx/conf.d
+      - ./static:/static
+    depends_on:
+      - web
+  web:
+    build: .
+    container_name: dialog_marker_app
+    command: gunicorn dialogclassifier.wsgi -b 0.0.0.0:8000
+    env_file:
+      - app.env
+    volumes:
+      - ./src:/src
+      - ./static:/static
+    expose:
+      - "8000"
+
